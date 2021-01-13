@@ -71,7 +71,7 @@ namespace PaddleSdkTest
                 for (int w = 0; w < newBit.Width; w++)
                 {
                     var c = newBit.GetPixel(w, h);
-                    var index = h * 320 + w;
+                    var index = h * width + w;
                     fdata[index] = (float)((c.R / 255.0 - 0.5) / 0.5);
                     fdata[wheel + index] = (float)((c.G / 255.0 - 0.5) / 0.5);
                     fdata[2 * wheel + index] = (float)((c.B / 255.0 - 0.5) / 0.5);
