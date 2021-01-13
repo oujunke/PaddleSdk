@@ -10,6 +10,7 @@ namespace PaddleSdk
     {
         internal IntPtr _intPtr;
         public IntPtr Handle { get => _intPtr; }
+        public int[] InputShape;
         public Config()
         {
             _intPtr = PaddleFluidCLib.PD_NewAnalysisConfig();
@@ -55,9 +56,9 @@ namespace PaddleSdk
         /// <param name="modelPath"></param>
         /// <param name="paramsPath"></param>
         /// <returns></returns>
-        public static Config GetDefault(string modelPath, string paramsPath)
+        public static Config GetDefault(string modelPath, string paramsPath,int[] shape=null)
         {
-            Config config = new Config();
+            Config config = new Config { InputShape=shape };
             config.DisableGpu();
             config.SwitchSpecifyInputNames(true);
             config.SwitchUseFeedFetchOps(false);

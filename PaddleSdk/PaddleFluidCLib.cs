@@ -171,11 +171,22 @@ namespace PaddleSdk
             PD_FLOAT32, PD_INT32, PD_INT64, PD_UINT8, PD_UNKDTYPE
         }
         [StructLayout(LayoutKind.Sequential)]
-        public struct PD_Buffer
+        public struct PD_Buffer:IDisposable
         {
             public IntPtr Data;
             public ulong Length;
             public ulong Capacity;
+
+            public void Dispose()
+            {
+                try
+                {
+                    Marshal.FreeHGlobal(Data);
+                }
+                catch
+                {
+                }
+            }
 
             public byte[] ReadData()
             {
