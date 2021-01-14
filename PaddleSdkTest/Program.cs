@@ -11,7 +11,9 @@ namespace PaddleSdkTest
     {
         static void Main(string[] args)
         {
+            //此模型要求输入3*32*320数据
             var config = Config.GetDefault("Model/model", "Model/params", new[] { 1, 3, 32, 320 });
+            PD_EnableMKLDNN(config.Handle);
             config.DisableGlogInfo();
             var paddle = config.GetPaddle();
             var data = GetData(Image.FromFile("99.jpg") as Bitmap, 320, 32);

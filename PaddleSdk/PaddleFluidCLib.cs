@@ -23,84 +23,91 @@ namespace PaddleSdk
         /// </summary>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_DeleteAnalysisConfig(IntPtr comfig);
+        public static extern void PD_DeleteAnalysisConfig(IntPtr config);
         /// <summary>
         /// 关闭gpu
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_DisableGpu(IntPtr comfig);
+        public static extern void PD_DisableGpu(IntPtr config);
         /// <summary>
         /// 关闭日记输出
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_DisableGlogInfo(IntPtr comfig);
+        public static extern void PD_DisableGlogInfo(IntPtr config);
         /// <summary>
         /// 开启cudnn
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_EnableCUDNN(IntPtr comfig);
+        public static extern void PD_EnableCUDNN(IntPtr config);
         /// <summary>
         /// 开启mkldnn
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_EnableMKLDNN(IntPtr comfig);
+        public static extern void PD_EnableMKLDNN(IntPtr config);
         /// <summary>
         /// 获得当前线程数
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern int PD_CpuMathLibraryNumThreads(IntPtr comfig); 
+        public static extern int PD_CpuMathLibraryNumThreads(IntPtr config); 
         /// <summary>
         /// 设置当前线程数
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern int PD_SetCpuMathLibraryNumThreads(IntPtr comfig,int num);
+        public static extern int PD_SetCpuMathLibraryNumThreads(IntPtr config,int num);
         /// <summary>
         /// 开启cudnn
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern bool PD_CudnnEnabled(IntPtr comfig);
+        public static extern bool PD_CudnnEnabled(IntPtr config);
         /// <summary>
         /// 是否切换指定输入名称
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <param name="open"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_SwitchSpecifyInputNames(IntPtr comfig, bool open);
+        public static extern void PD_SwitchSpecifyInputNames(IntPtr config, bool open);
         /// <summary>
         /// 是否切换使用Feed获取操作
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <param name="open"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_SwitchUseFeedFetchOps(IntPtr comfig, bool open);
+        public static extern void PD_SwitchUseFeedFetchOps(IntPtr config, bool open);
+        /// <summary>
+        /// 查询当前Mkldnn是否开启
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="open"></param>
+        [DllImport("paddle_fluid_c.dll")]
+        public static extern bool PD_MkldnnEnabled(IntPtr config);
         /// <summary>
         /// 设置模型
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <param name="modelPath"></param>
         /// <param name="paramsPath"></param>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern void PD_SetModel(IntPtr comfig, string modelPath, string paramsPath);
+        public static extern void PD_SetModel(IntPtr config, string modelPath, string paramsPath);
         /// <summary>
         /// 创建预测器
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern IntPtr PD_NewPredictor(IntPtr comfig);
+        public static extern IntPtr PD_NewPredictor(IntPtr config);
         #endregion
         #region
         /// <summary>
         /// 删除预测器
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
         public static extern void PD_DeletePredictor(IntPtr predictor);
@@ -133,7 +140,7 @@ namespace PaddleSdk
         /// <param name="index"></param>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern string PD_GetInputName(IntPtr predictor, int index);
+        public static extern IntPtr PD_GetInputName(IntPtr predictor, int index);
         /// <summary>
         /// 获得输出参数名称
         /// </summary>
@@ -141,7 +148,7 @@ namespace PaddleSdk
         /// <param name="index"></param>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern string PD_GetOutputName(IntPtr predictor, int index);
+        public static extern IntPtr PD_GetOutputName(IntPtr predictor, int index);
         /// <summary>
         /// 设置输入参数
         /// </summary>
@@ -161,10 +168,10 @@ namespace PaddleSdk
         /// <summary>
         /// 创建预测器
         /// </summary>
-        /// <param name="comfig"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
         [DllImport("paddle_fluid_c.dll")]
-        public static extern IntPtr PD_DeleteZeroCopyTensor(IntPtr comfig);
+        public static extern IntPtr PD_DeleteZeroCopyTensor(IntPtr config);
         #endregion
         public enum PD_DataType
         {

@@ -25,6 +25,25 @@ namespace PaddleSdk
             byte[] b2 = new byte[6];
         }
         /// <summary>
+        /// 获得输入名称
+        /// </summary>
+        /// <returns></returns>
+        public string GetInputName(int index)
+        {
+            var namePtr = PD_GetInputName(Handle, index);
+            return Marshal.PtrToStringAnsi(namePtr);
+        }
+        /// <summary>
+        /// 获得输出名称
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public string GetOutputName(int index)
+        {
+            var namePtr = PD_GetOutputName(Handle, index);
+            return Marshal.PtrToStringAnsi(namePtr);
+        }
+        /// <summary>
         /// 预测
         /// </summary>
         /// <param name="pD_ZeroCopyTensors"></param>
@@ -42,7 +61,7 @@ namespace PaddleSdk
             {
                 // 获取预测输出
                 PD_ZeroCopyTensor output = new PD_ZeroCopyTensor();
-                output.Name = PD_GetOutputName(_intPtr, i);
+                output.Name = GetOutputName(i);
                 // 获取 output 之后，可以通过该数据结构，读取到 data, shape 等信息
                 PD_GetZeroCopyOutput(_intPtr, ref output);
                 dataReads[i] = output.GetValue() as DataRead;
@@ -58,8 +77,9 @@ namespace PaddleSdk
         public DataRead[] Prediction(byte[] data, int[] shape)
         {
             PD_ZeroCopyTensor input = new PD_ZeroCopyTensor();
+           
             // 设置输入的名称
-            input.Name = PD_GetInputName(Handle, 0);
+            input.Name = GetInputName(0);
             // 设置输入的数据大小
             input.Data.Capacity = (ulong)data.Length;
             input.Data.Length = input.Data.Capacity;
@@ -103,7 +123,7 @@ namespace PaddleSdk
         /// <returns></returns>
         public DataRead[] Prediction(byte[] data)
         {
-            if(_config.InputShape==null|| _config.InputShape.Length == 0)
+            if (_config.InputShape == null || _config.InputShape.Length == 0)
             {
                 throw new Exception("Please set InputShape");
             }
