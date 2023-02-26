@@ -338,4 +338,11 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/PaddleSdk
+/PaddleSdk/paddle_inference_c.dll
+/PaddleSdk/paddle2onnx.dll
+/PaddleSdk/openblas.dll
+/PaddleSdk/onnxruntime.dll
+/PaddleSdk/mklml.dll
+/PaddleSdk/mkldnn.dll
+/PaddleSdk/libiomp5md.dll
+/PaddleSdk/mkldnn.dll
