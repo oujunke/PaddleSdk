@@ -9,14 +9,21 @@ namespace PaddleSdkTest
 {
     class Program
     {
+        static void TestOcr()
+        {
+            PaddleOcr.PaddleOcrServer paddleOcrServer = new PaddleOcr.PaddleOcrServer("inference");
+            //paddleOcrServer.Ocr("PaddleOCR_log.png");
+            paddleOcrServer.Ocr("TEST1.jpeg");
+            //paddleOcrServer.Recognizer("TestRec.jpeg");
+        }
         static void Main(string[] args)
         {
+            TestOcr();
             //此模型要求输入3*32*320数据
             var config = Config.GetDefault("Model/model", "Model/params", new[] { 1, 3, 32, 320 });
-            PD_EnableMKLDNN(config.Handle);
             config.DisableGlogInfo();
             var paddle = config.GetPaddle();
-            var data = GetData(Image.FromFile("99.jpg") as Bitmap, 320, 32);
+            var data = GetFloatData(Image.FromFile("99.jpg") as Bitmap, 320, 32);
             var results = paddle.Prediction(data);
             // 根据训练时数据处理方式和模型定义(不要问我为什么要这样写)
             string labelString = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -53,7 +60,7 @@ namespace PaddleSdkTest
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        static byte[] GetData(Bitmap bitmap, int width, int height)
+        static float[] GetFloatData(Bitmap bitmap, int width, int height)
         {
             var ratio = bitmap.Width * 1.0 / bitmap.Height;
             var resized_w = 0;
@@ -79,12 +86,7 @@ namespace PaddleSdkTest
                     fdata[2 * wheel + index] = (float)((c.B / 255.0 - 0.5) / 0.5);
                 }
             }
-            List<byte> bsList = new List<byte>(fdata.Length * sizeof(float));
-            foreach (var f in fdata)
-            {
-                bsList.AddRange(BitConverter.GetBytes(f));
-            }
-            return bsList.ToArray();
+            return fdata;
         }
     }
 }

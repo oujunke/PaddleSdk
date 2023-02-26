@@ -13,42 +13,42 @@ namespace PaddleSdk
         public int[] InputShape;
         public Config()
         {
-            _intPtr = PaddleFluidCLib.PD_NewAnalysisConfig();
+            _intPtr = PaddleFluidCLib.PD_ConfigCreate();
         }
         /// <summary>
         /// 关闭gpu
         /// </summary>
         public void DisableGpu()
         {
-            PaddleFluidCLib.PD_DisableGpu(_intPtr);
+            PaddleFluidCLib.PD_ConfigDisableGpu(_intPtr);
+        }
+        /// <summary>
+        /// 开启gpu
+        /// </summary>
+        public bool EnableUseGpu(ushort deviceId, ulong memoryPoolInitSizeMb)
+        {
+            //PaddleFluidCLib.PD_ConfigEnableGpuMultiStream(_intPtr);
+            //var res=PaddleFluidCLib.PD_ConfigUseGpu(_intPtr);
+            PaddleFluidCLib.PD_ConfigEnableUseGpu(_intPtr, memoryPoolInitSizeMb, deviceId);
+            PaddleFluidCLib.PD_ConfigSwitchIrOptim(_intPtr, true);
+            PaddleFluidCLib.PD_ConfigEnableMemoryOptim(_intPtr, true);
+            //PaddleFluidCLib.PD_ConfigEnableTensorRtEngine(_intPtr, 1<<30, 100, 3, PaddleFluidCLib.PD_PrecisionType.PD_PRECISION_FLOAT32, true, true);
+            var res= PaddleFluidCLib.PD_ConfigUseGpu(_intPtr);
+            return res;
         }
         /// <summary>
         /// 关闭日记输出
         /// </summary>
         public void DisableGlogInfo()
         {
-            PaddleFluidCLib.PD_DisableGlogInfo(_intPtr);
-        }
-        /// <summary>
-        /// 是否切换指定输出
-        /// </summary>
-        public void SwitchSpecifyInputNames(bool x)
-        {
-            PaddleFluidCLib.PD_SwitchSpecifyInputNames(_intPtr, x);
-        }
-        /// <summary>
-        /// 是否切换使用Feed获取操作
-        /// </summary>
-        public void SwitchUseFeedFetchOps(bool x)
-        {
-            PaddleFluidCLib.PD_SwitchUseFeedFetchOps(_intPtr, x);
+            PaddleFluidCLib.PD_ConfigDisableGlogInfo(_intPtr);
         }
         /// <summary>
         /// 设置模型
         /// </summary>
         public void SetModel(string modelPath, string paramsPath)
         {
-            PaddleFluidCLib.PD_SetModel(_intPtr, modelPath, paramsPath);
+            PaddleFluidCLib.PD_ConfigSetModel(_intPtr, modelPath, paramsPath);
         }
         /// <summary>
         /// 获得默认配置
@@ -56,12 +56,10 @@ namespace PaddleSdk
         /// <param name="modelPath"></param>
         /// <param name="paramsPath"></param>
         /// <returns></returns>
-        public static Config GetDefault(string modelPath, string paramsPath,int[] shape=null)
+        public static Config GetDefault(string modelPath, string paramsPath, int[] shape = null)
         {
-            Config config = new Config { InputShape=shape };
-            config.DisableGpu();
-            config.SwitchSpecifyInputNames(true);
-            config.SwitchUseFeedFetchOps(false);
+            Config config = new Config { InputShape = shape };
+            config.EnableUseGpu(0, 1024);
             config.SetModel(modelPath, paramsPath);
             return config;
         }
@@ -71,10 +69,7 @@ namespace PaddleSdk
         }
         public void Dispose()
         {
-            PaddleFluidCLib.PD_DeleteAnalysisConfig(_intPtr);
+            PaddleFluidCLib.PD_ConfigDestroy(_intPtr);
         }
-        // PaddleFluidCLib.PD_SwitchSpecifyInputNames(config, true);
-        // PaddleFluidCLib.PD_SwitchUseFeedFetchOps(config, false);
-        //    PaddleFluidCLib.PD_SetModel(config, model_path, params_path);
     }
 }

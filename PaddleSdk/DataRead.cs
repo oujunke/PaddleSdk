@@ -9,18 +9,16 @@ namespace PaddleSdk
     public abstract class DataRead
     {
         public int[] Shape;
-        public int[] Lod;
         public abstract int[] ToInt();
         public abstract float[] ToFloat();
     }
     public class DataRead<T> : DataRead
     {
         public List<T> Data;
-        public DataRead(List<T> data, int[] sharp, int[] lod)
+        public DataRead(List<T> data, int[] sharp)
         {
             Shape = sharp;
             Data = data;
-            Lod = lod;
         }
         public T GetSingleItem(params int[] indexs)
         {

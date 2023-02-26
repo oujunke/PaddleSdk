@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32804.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaddleSdkTest", "PaddleSdkTest\PaddleSdkTest.csproj", "{2D925079-4891-4576-AEC6-8DA85295A02D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaddleSdk", "PaddleSdk\PaddleSdk.csproj", "{9CACAE00-1172-4980-8E02-176A3B117440}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaddleSdk", "PaddleSdk\PaddleSdk.csproj", "{9CACAE00-1172-4980-8E02-176A3B117440}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CHeadToClass", "CHeadToClass\CHeadToClass.csproj", "{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaddleOcr", "PaddleOcr\PaddleOcr.csproj", "{3DE6759C-39EC-4566-89B7-0326E8943CCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,22 @@ Global
 		{9CACAE00-1172-4980-8E02-176A3B117440}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9CACAE00-1172-4980-8E02-176A3B117440}.Release|x64.ActiveCfg = Release|x64
 		{9CACAE00-1172-4980-8E02-176A3B117440}.Release|x64.Build.0 = Release|x64
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Debug|x64.Build.0 = Debug|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Release|x64.ActiveCfg = Release|Any CPU
+		{BF350C52-B2A2-48EC-BC24-6EAA05DC26BE}.Release|x64.Build.0 = Release|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Debug|x64.Build.0 = Debug|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Release|x64.ActiveCfg = Release|Any CPU
+		{3DE6759C-39EC-4566-89B7-0326E8943CCB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

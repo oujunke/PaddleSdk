@@ -346,3 +346,4 @@ healthchecksdb
 /PaddleSdk/mkldnn.dll
 /PaddleSdk/libiomp5md.dll
 /PaddleSdk/mkldnn.dll
+/PaddleSdk/*.dll
