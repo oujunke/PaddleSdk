@@ -3,6 +3,7 @@ using Clipper2Lib;
 using Emgu.CV;
 using Emgu.CV.Rapid;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
 using PaddleSdk;
 using System;
 using System.Drawing;
@@ -65,23 +66,39 @@ namespace PaddleOcr
             //CvInvoke.FindContours(uMat1, umat2,)
             Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
             Mat hier = new Mat();
+            var fcUmat = uMat1.ToUMat();
+            fcUmat.ConvertTo(fcUmat, Emgu.CV.CvEnum.DepthType.Cv8U);
+            CvInvoke.FindContours(fcUmat, contours, hier, Emgu.CV.CvEnum.RetrType.List, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
 
-            CvInvoke.FindContours(uMat1, contours, hier, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
-
-            CvInvoke.DrawContours(uMat1, contours, 0, new MCvScalar(255, 0, 0), 2);
+            //CvInvoke.DrawContours(uMat1, contours, 0, new MCvScalar(255, 0, 0), 2);
             List<(Rectangle, double)> res = new List<(Rectangle, double)>();
             var numContours = Math.Min(contours.Size, 1000);
             var uImg = uMat1.ToUMat();
             for (int i = 0; i < numContours; i++)
             {
                 var contour = contours[i];
-                var (isSucc, score, rec) = GetMinBox(uImg, contour, true);
+                var (isSucc, score, rec) = GetMinBox(uImg, uMat, contour, true);
                 if (!isSucc)
                 {
                     continue;
                 }
                 res.Add((rec, score));
+                if (res.Count == 168)
+                {
+
+                }
             }
+            return res;
+        }
+        public List<(Rectangle, double)> BoxesFromUMat(UMat mat)
+        {
+            Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
+            Mat hier = new Mat();
+
+            CvInvoke.FindContours(mat, contours, hier, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+            List<(Rectangle, double)> res = new List<(Rectangle, double)>();
+            var numContours = Math.Min(contours.Size, 1000);
+
             return res;
         }
         public void Ocr(UMat mat)
@@ -90,11 +107,20 @@ namespace PaddleOcr
             OcrResult result = new OcrResult { OldMat = mat, RecMat = umat1, Ocrs = new List<OcrResult.OcrModel>() };
             var res = Detector(umat1);
             var size = 6;
+            var dw = mat.Cols * 1.0 / rec.Width;
+            var dh = mat.Rows * 1.0 / rec.Height;
             for (int i = 0; i < res.Count; i += size)
             {
-                var recs = res.Skip(i).Take(size).Select(r => r.Item1).ToList();
-                var data = GetRecData(umat1, recs);
-                Recognizer(data, recs, umat1, result.Ocrs);
+                var recs = res.Skip(i).Take(size).Select(r =>
+                {
+                    var x = (int)(Math.Round(r.Item1.X * dw));
+                    var y = (int)(Math.Round(r.Item1.Y * dh));
+                    var w = (int)(Math.Round(r.Item1.Right * dw)) - x;
+                    var h = (int)(Math.Round(r.Item1.Bottom * dh)) - y;
+                    return new Rectangle(x, y, w, h);
+                }).ToList();
+                var data = GetRecData(mat, recs);
+                Recognizer(data, recs, mat, result.Ocrs);
             }
             result.Ocrs.LastOrDefault().RecMat.Save("t11.jpeg");
         }
@@ -166,10 +192,10 @@ namespace PaddleOcr
                         maxIndex = z;
                     }
                 }
-                
-                if (maxIndex>0&&maxIndex != lastValue&&maxIndex <= Chars.Count)
+
+                if (maxIndex > 0 && maxIndex != lastValue && maxIndex <= Chars.Count)
                 {
-                    ints.Add(maxIndex-1);
+                    ints.Add(maxIndex - 1);
                     scores.Add(maxScore);
                 }
                 lastValue = maxIndex;
@@ -211,7 +237,7 @@ namespace PaddleOcr
                             maxIndex = z;
                         }
                     }
-                    if (maxIndex > 0&& maxIndex!=lastValue && maxIndex <= Chars.Count)
+                    if (maxIndex > 0 && maxIndex != lastValue && maxIndex <= Chars.Count)
                     {
                         ints.Add(maxIndex - 1);
                         scores.Add(maxScore);
@@ -236,17 +262,17 @@ namespace PaddleOcr
             CvInvoke.Resize(mat, mat1, size);
             return (mat1, size);
         }
-        public (bool, double, Rectangle) GetMinBox(UMat mat, IInputArray contour, bool isClipperOffset = false, bool isScore = true)
+        public (bool, double, Rectangle) GetMinBox(UMat mat, UMat old, IInputArray contour, bool isClipperOffset = false, bool isScore = true)
         {
             var boundingBox = CvInvoke.MinAreaRect(contour);
-            return GetMinBox(mat, boundingBox, isClipperOffset, isScore);
+            return GetMinBox(mat, old, boundingBox, isClipperOffset, isScore);
         }
-        public (bool, double, Rectangle) GetMinBox(UMat mat, PointF[] ps, bool isClipperOffset = false, bool isScore = true)
+        public (bool, double, Rectangle) GetMinBox(UMat mat, UMat old, PointF[] ps, bool isClipperOffset = false, bool isScore = true)
         {
             var boundingBox = CvInvoke.MinAreaRect(ps);
-            return GetMinBox(mat, boundingBox, isClipperOffset, isScore);
+            return GetMinBox(mat, old, boundingBox, isClipperOffset, isScore);
         }
-        public (bool, double, Rectangle) GetMinBox(UMat mat, RotatedRect boundingBox, bool isClipperOffset = false, bool isScore = true)
+        public (bool, double, Rectangle) GetMinBox(UMat mat, UMat old, RotatedRect boundingBox, bool isClipperOffset = false, bool isScore = true)
         {
             var sside = Math.Min(boundingBox.Size.Width, boundingBox.Size.Height);
             if (sside < 3)
@@ -254,13 +280,15 @@ namespace PaddleOcr
                 return default;
             }
             var points = CvInvoke.BoxPoints(boundingBox);
-            var minX = points.Min(p => p.X);
-            var maxX = points.Max(p => p.X);
-            var minY = points.Min(p => p.Y);
-            var maxY = points.Max(p => p.Y);
-            var rec = new Rectangle(Math.Max((int)minX - 2, 0), Math.Max((int)minY - 2, 0), Math.Min((int)Math.Ceiling(maxX - minX) + 4, mat.Cols), Math.Min((int)Math.Ceiling(maxY - minY) + 4, mat.Rows));
-
-            var scalar = CvInvoke.Mean(new UMat(mat, rec));
+            var minX = Math.Min(Math.Max((int)points.Min(p => p.X), 0), mat.Cols - 1);
+            var maxX = Math.Min(Math.Max((int)points.Max(p => p.X), 0), mat.Cols - 1);
+            var minY = Math.Min(Math.Max((int)points.Min(p => p.Y), 0), mat.Cols - 1);
+            var maxY = Math.Min(Math.Max((int)points.Max(p => p.Y), 0), mat.Cols - 1);
+            var rec = new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+            var mask = new UMat(rec.Height, rec.Width, Emgu.CV.CvEnum.DepthType.Cv8U, 1);
+            VectorOfPoint pointVector = new VectorOfPoint(points.Select(p => new Point((int)(p.X - minX), (int)(p.Y - minY))).ToArray());
+            CvInvoke.FillPoly(mask, pointVector, new MCvScalar(1));
+            var scalar = CvInvoke.Mean(new UMat(old, rec), mask);
             var score = scalar.V0;
             if (isScore && score < 0.2)
             {
@@ -269,11 +297,11 @@ namespace PaddleOcr
             if (isClipperOffset)
             {
                 ClipperOffset clipperOffset = new ClipperOffset();
-                clipperOffset.AddPath(new Path64(points.Select(po => new Point64(po.X, po.Y))), JoinType.Round, EndType.Polygon);
+                clipperOffset.AddPath(new Path64(points.Select(po => new Point64(po.X * 1.0, po.Y * 1.0))), JoinType.Round, EndType.Polygon);
                 var distance = GetContourArea(points);
                 var point64s = clipperOffset.Execute(distance);
-                var res = GetMinBox(mat, point64s[0].Select(po => new PointF(po.X, po.Y)).ToArray(), false, false);
-                return (res.Item1, score, res.Item3);
+                var res = GetMinBox(mat, old, point64s[0].Select(po => new PointF(po.X, po.Y)).ToArray(), false, false);
+                return (res.Item1, score, new Rectangle(res.Item3.X, res.Item3.Y, res.Item3.Width - 1, res.Item3.Height - 1));
             }
             return (true, score, rec);
         }
@@ -323,7 +351,7 @@ namespace PaddleOcr
                 for (int j = 0; j < mat.Cols; j++)
                 {
                     //bs[i, j, 0] = (byte)(arr[i, j] > 0.3 ? 1 : 0);
-                    bs[i, j, 0] = (byte)(arr[i, j] > 0.3 ? 255 : 0);
+                    bs[i, j, 0] = (byte)(arr[i, j] > 0.3 ? 1 : 0);
                 }
             }
             Image<Gray, byte> image = new Image<Gray, byte>(bs);
